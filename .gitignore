@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Config with personal paths
+config.py
+claude/
+temp/
+Unused/
+CARLA_0.9.15/
+
+# Training output
+training_results.png
+*.log
