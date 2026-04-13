@@ -34,33 +34,33 @@ Each genome is evaluated for 60 seconds of real simulation time. Fitness is a we
 | Forward progress | +2.0 | Dot product of movement with forward vector |
 | Reverse movement | -3.0 | Penalises driving backwards |
 | Heading alignment | -1.5 | Penalises facing away from the road direction |
-| Lane offset | -1.0 | Penalises distance from lane center |
-| Speed shaping | +0.5 | Rewards driving near 8 m/s (~28 km/h) |
-| Idle penalty | -1.5 | Applied when the road ahead is clear but the car isn't moving |
+| Lane offset | -1.0 | Penalises distance from center of closest lane |
+| Speed shaping | +0.5 | Rewards driving close to 8 m/s |
+| Idle penalty | -1.5 | Penalises not moving except when stopped with obstacle in front |
 | Checkpoint reached | +10.0 | Bonus per route waypoint passed |
-| Collision | -50.0 | Per collision event; eval ends immediately |
-| Stuck penalty | -20.0 | Eval ends early if no meaningful movement for 10 s |
+| Collision | -50.0 | Applied on collision, run ends as well |
+| Stuck penalty | -20.0 | Eval ends early if good movement for 10 s |
 
 ### Neural Network Inputs (16)
 
 | Index | Description |
 |---|---|
-| 0 | Speed (normalized, target = 30 m/s) |
+| 0 | Speed that has been normalized |
 | 1 | Current steering angle |
-| 2 | Heading error to next waypoint |
-| 3 | Distance to next waypoint (normalized) |
+| 2 | Direction error to next waypoint |
+| 3 | Distance to next waypoint |
 | 4 | Signed lane offset |
 | 5–11 | Raycasts at −90°, −45°, −20°, 0°, +20°, +45°, +90° |
-| 12–13 | Nearest vehicle: normalized distance, signed lateral angle |
-| 14–15 | 2nd nearest vehicle: normalized distance, signed lateral angle |
+| 12–13 | Nearest vehicle: signed lateral angle |
+| 14–15 | 2nd nearest vehicle: signed lateral angle |
 
 ### Neural Network Outputs (3)
 
 | Index | Description |
 |---|---|
 | 0 | Throttle `[0, 1]` |
-| 1 | Brake `[0, 1]` (zeroed below 0.6 deadzone; suppressed when throttle > 0.5) |
-| 2 | Steer — sigmoid output remapped to `[-1, 1]` |
+| 1 | Brake `[0, 1]` (below 0.6 deadzone; suppressed when throttle > 0.5) |
+| 2 | Steer — done with sigmoid output remapped to `[-1, 1]` |
 
 ---
 
@@ -133,7 +133,7 @@ ADD_CONNECTION_RATE = 0.15
 ADD_NODE_RATE       = 0.15
 
 EVAL_DURATION_SECONDS = 60
-MAX_RAY_DISTANCE      = 50.0
+MAX_RAY_DISTANCE      = 50
 NUM_NEARBY_VEHICLES   = 2
 ```
 
@@ -142,7 +142,7 @@ Population size and generation count are set in `Main.py`:
 ```python
 inputs  = 16
 outputs = 3
-evals   = 100   # generations
+evals   = 100 generations
 
 eval = Evaluator(100, ...)  # 100 = population size
 ```
@@ -153,13 +153,13 @@ eval = Evaluator(100, ...)  # 100 = population size
 
 **Synchronous CARLA mode** — the simulator only advances when `world.tick()` is called, giving deterministic, reproducible evaluations without timing drift.
 
-**Shared route per generation** — all genomes in a generation are evaluated on the same randomly chosen origin → destination route, making fitness scores directly comparable within a generation.
+**Shared route per generation** — all genomes in a generation are evaluated on the same randomly chosen origin so that fitness scores are dependent on driving not randomly chosen route.
 
-**Traffic refresh** — before each generation, destroyed or culled traffic vehicles are automatically replaced so the traffic density stays consistent throughout a long training run.
+**Traffic refresh** — before each generation, destroyed or culled traffic vehicles are automatically replaced so the traffic density stays consistent throughout a long training run so no uneveness is allowed in training.
 
-**Brake deadzone** — sigmoid activations cluster near 0.5 with random initial weights. A 0.6 deadzone prevents the brake from constantly fighting the throttle during the early generations when CARLA gives brake priority over throttle.
+**Brake deadzone** — sigmoid activations cluster near 0.5 with random initial weights. A 0.6 deadzone prevents the brake from constantly fighting the throttle due to carla prioritizing the brake when it is being applied. This allows early generations to learn to drive without getting softlocked into not moving.
 
-**Stuck detection** — if a genome goes 10 seconds without moving more than 0.05 m per tick, evaluation ends early with a −20 penalty, saving time during the generations where many networks haven't yet learned to accelerate.
+**Stuck detection** — if a genome goes 10 seconds without moving more than 0.05 m per tick, evaluation ends early with a −20 penalty, so time can be saved during training on genomes that haven't actually learned to drive yet.
 
 ---
 
