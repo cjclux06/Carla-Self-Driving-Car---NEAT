@@ -14,7 +14,7 @@ At cullmaination data s saved to "training_results.png showing things like fitne
 
 ## How It Works
 
-# NEAT Overview
+### NEAT Overview
 
 NEAT evolves both the weights *and* the structure of neural networks at the same time. Each genome is given a directed graph of nodes and weighted connections. Over the generations, mutations can:
 
@@ -25,7 +25,7 @@ NEAT evolves both the weights *and* the structure of neural networks at the same
 Genomes are "grouped" into **species** to allow closly built genomes to go through evolution together and allow new networks to grow with less competition. 
 Genomes are grouped into **species** using a compatibility distance metric (excess genes, disjoint genes, and average weight difference), so structural innovations are protected from being immediately out-competed.
 
-# Fitness Function
+### Fitness Function
 
 Each genome is evaluated for 60 seconds of real simulation time. Fitness is a weighted sum of:
 
@@ -41,7 +41,7 @@ Each genome is evaluated for 60 seconds of real simulation time. Fitness is a we
 | Collision | -50.0 | Per collision event; eval ends immediately |
 | Stuck penalty | -20.0 | Eval ends early if no meaningful movement for 10 s |
 
-# Neural Network Inputs (16)
+### Neural Network Inputs (16)
 
 | Index | Description |
 |---|---|
@@ -54,7 +54,7 @@ Each genome is evaluated for 60 seconds of real simulation time. Fitness is a we
 | 12–13 | Nearest vehicle: normalized distance, signed lateral angle |
 | 14–15 | 2nd nearest vehicle: normalized distance, signed lateral angle |
 
-# Neural Network Outputs (3)
+### Neural Network Outputs (3)
 
 | Index | Description |
 |---|---|
