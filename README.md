@@ -153,7 +153,7 @@ eval = Evaluator(100, ...)  # 100 = population size
 
 **Synchronous CARLA mode** — the simulator only advances when `world.tick()` is called, giving deterministic, reproducible evaluations without timing drift.
 
-**Shared route per generation** — all genomes in a generation are evaluated on the same randomly chosen origin . so fitness reflects driving ability rather than route luck.
+**Shared route per generation** — all genomes in a generation are evaluated on the same randomly chosen origin so fitness reflects driving ability rather than route luck.
 
 **Traffic refresh** — before each generation, destroyed or culled traffic vehicles are automatically replaced so the traffic density stays consistent throughout a long training run so no uneveness is allowed in training.
 
