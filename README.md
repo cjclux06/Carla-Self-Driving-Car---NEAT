@@ -8,7 +8,7 @@ The neural network starts with the most simplistic form with inputs directly con
 
 ## Demo / Results
 
-At cullmaination data s saved to "training_results.png showing things like fitness curves, species count, and network complexity over all the generations. 
+At cullmination data s saved to "training_results.png" showing things like fitness curves, species count, and network complexity over all the generations. 
 
 ---
 
@@ -39,7 +39,7 @@ Each genome is evaluated for 60 seconds of real simulation time. Fitness is a we
 | Idle penalty | -1.5 | Penalises not moving except when stopped with obstacle in front |
 | Checkpoint reached | +10.0 | Bonus per route waypoint passed |
 | Collision | -50.0 | Applied on collision, run ends as well |
-| Stuck penalty | -20.0 | Eval ends early if good movement for 10 s |
+| Stuck penalty | -20.0 | Eval ends early if no meaningful movement for 10 s |
 
 ### Neural Network Inputs (16)
 
@@ -47,12 +47,12 @@ Each genome is evaluated for 60 seconds of real simulation time. Fitness is a we
 |---|---|
 | 0 | Speed that has been normalized |
 | 1 | Current steering angle |
-| 2 | Direction error to next waypoint |
+| 2 | Heading error to next waypoint |
 | 3 | Distance to next waypoint |
 | 4 | Signed lane offset |
 | 5–11 | Raycasts at −90°, −45°, −20°, 0°, +20°, +45°, +90° |
-| 12–13 | Nearest vehicle: signed lateral angle |
-| 14–15 | 2nd nearest vehicle: signed lateral angle |
+| 12–13 | Nearest vehicle: normalized distance, signed lateral angle |
+| 14–15 | 2nd nearest vehicle: normalized distance, signed lateral angle |
 
 ### Neural Network Outputs (3)
 
@@ -142,7 +142,7 @@ Population size and generation count are set in `Main.py`:
 ```python
 inputs  = 16
 outputs = 3
-evals   = 100 generations
+evals   = 100  # generations
 
 eval = Evaluator(100, ...)  # 100 = population size
 ```
@@ -153,7 +153,7 @@ eval = Evaluator(100, ...)  # 100 = population size
 
 **Synchronous CARLA mode** — the simulator only advances when `world.tick()` is called, giving deterministic, reproducible evaluations without timing drift.
 
-**Shared route per generation** — all genomes in a generation are evaluated on the same randomly chosen origin so that fitness scores are dependent on driving not randomly chosen route.
+**Shared route per generation** — all genomes in a generation are evaluated on the same randomly chosen origin . so fitness reflects driving ability rather than route luck.
 
 **Traffic refresh** — before each generation, destroyed or culled traffic vehicles are automatically replaced so the traffic density stays consistent throughout a long training run so no uneveness is allowed in training.
 
