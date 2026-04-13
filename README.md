@@ -1,6 +1,6 @@
 # Autonomous Driving in CARLA Through the Application of NEAT
 
-This is a from scratch implemenation of **NEAT** (NeuroEvolution of Augmenting Topologies) running inside a [CARLA](https://carla.org/) driving simulator to train an autonomous vehicle to drive with some commonality to humans. 
+This is a from scratch implementation of **NEAT** (NeuroEvolution of Augmenting Topologies) running inside a [CARLA](https://carla.org/) driving simulator to train an autonomous vehicle to drive with some commonality to humans. 
 
 The neural network starts with the most simplistic form with inputs directly connected to outputs. Over generations the topology of the network changes through purposely randomized evolution to force the car to stay in lanes and avoid collision. 
 
@@ -8,7 +8,7 @@ The neural network starts with the most simplistic form with inputs directly con
 
 ## Demo / Results
 
-At cullmination data s saved to "training_results.png" showing things like fitness curves, species count, and network complexity over all the generations. 
+At culmination data s saved to "training_results.png" showing things like fitness curves, species count, and network complexity over all the generations. 
 
 ---
 
@@ -22,7 +22,7 @@ NEAT evolves both the weights *and* the structure of neural networks at the same
 - **Add a connection** — a new synapse between two previously unconnected nodes
 - **Add a node** — an existing connection is split; a new hidden node is inserted in between
 
-Genomes are "grouped" into **species** to allow closly built genomes to go through evolution together and allow new networks to grow with less competition. 
+Genomes are "grouped" into **species** to allow closly related genomes to go through evolution together and allow new networks to grow with less competition. 
 Genomes are grouped into **species** using a compatibility distance metric (excess genes, disjoint genes, and average weight difference), so structural innovations are protected from being immediately out-competed.
 
 ### Fitness Function
@@ -160,6 +160,23 @@ eval = Evaluator(100, ...)  # 100 = population size
 **Brake deadzone** — sigmoid activations cluster near 0.5 with random initial weights. A 0.6 deadzone prevents the brake from constantly fighting the throttle due to carla prioritizing the brake when it is being applied. This allows early generations to learn to drive without getting softlocked into not moving.
 
 **Stuck detection** — if a genome goes 10 seconds without moving more than 0.05 m per tick, evaluation ends early with a −20 penalty, so time can be saved during training on genomes that haven't actually learned to drive yet.
+
+---
+
+## Limitations
+
+- Training is computationally expensive
+- Performance depends heavily on fitness shaping
+- No transfer learning between runs
+
+---
+
+## Why This Project Is Interesting
+
+- Demonstrates neuroevolution without gradient descent
+- Trains autonomous driving behavior in a realistic simulator
+- Evolves both network topology and weights dynamically
+- Handles multi-objective optimization through a custom fitness function
 
 ---
 
